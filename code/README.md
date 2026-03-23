@@ -3,6 +3,7 @@
 A lightweight, poster-friendly RL project designed for fast experiments and clean visualizations.
 
 ## Project idea
+
 The project studies a simple but interesting question:
 
 **What happens when the reward function is slightly wrong?**
@@ -12,6 +13,7 @@ The environment is a small gridworld with a goal and a cliff. In the `lure` rewa
 This lets you compare how different tabular control algorithms behave under reward misspecification.
 
 ## Included algorithms
+
 - Q-learning
 - SARSA
 - Expected SARSA
@@ -78,7 +80,9 @@ python visualization.py compare \
 ```
 
 ## What gets saved
+
 Each training run saves:
+
 - `metrics.csv` with full per-episode learning curves
 - `summary.json` with final summary statistics
 - `q_table.npy`
@@ -90,19 +94,23 @@ Each training run saves:
 ## Suggested experiments for the poster
 
 ### Experiment 1: Correct reward vs misspecified reward
+
 - same algorithm
 - same hyperparameters
 - compare learned policy and learning curves
 
 ### Experiment 2: Q-learning vs SARSA under misspecified reward
+
 - compare risky vs conservative behavior
 - use `cliff_hits` and `reward` curves
 
 ### Experiment 3: Effect of stochasticity
+
 - run with `--slip-prob 0.05` or `0.1`
 - see whether the misspecified reward becomes even more problematic
 
 ## Main CLI arguments
+
 - `--algorithm {q_learning,sarsa,expected_sarsa}`
 - `--episodes`
 - `--alpha`
@@ -116,7 +124,9 @@ Each training run saves:
 - `--output-dir`
 
 ## Poster tip
+
 A strong poster structure would be:
+
 1. Problem statement: reward misspecification
 2. Environment design
 3. Algorithms

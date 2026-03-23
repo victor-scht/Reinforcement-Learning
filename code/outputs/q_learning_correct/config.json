@@ -1,0 +1,23 @@
+{
+  "algorithm": "q_learning",
+  "episodes": 700,
+  "alpha": 0.5,
+  "gamma": 0.99,
+  "epsilon": 0.15,
+  "epsilon_min": 0.02,
+  "epsilon_decay": 0.995,
+  "seed": 0,
+  "width": 8,
+  "height": 5,
+  "reward_mode": "correct",
+  "step_reward": -1.0,
+  "goal_reward": 15.0,
+  "cliff_penalty": -20.0,
+  "lure_bonus": 6.0,
+  "right_bonus": 0.25,
+  "slip_prob": 0.0,
+  "max_steps": 200,
+  "eval_episodes": 30,
+  "output_dir": "outputs/q_learning_correct",
+  "curve_window": 25
+}
