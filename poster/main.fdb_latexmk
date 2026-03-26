@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1774550985.98632 "main.tex" "main.pdf" "main" 1774550986.59693 0
+["pdflatex"] 1774551553.52137 "main.tex" "main.pdf" "main" 1774551554.15729 0
   "/home/victor/texlive/2026/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/home/victor/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
   "/home/victor/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm" 1246382020 908 2921f8a10601f252058503cc6570e581 ""
@@ -193,10 +193,10 @@
   "/home/victor/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1774546017 5573042 bd2d289ed6ba30c58d7af00206987198 ""
   "/home/victor/texlive/2026/texmf-var/web2c/pdftex/pdflatex.fmt" 1774546077 3636698 0786b961983ba097f59cf87fff1c01c6 ""
   "/home/victor/texlive/2026/texmf.cnf" 1774546013.5562 496 01ab80fa0036a81d2df86fb0ac70c709 ""
-  "main.aux" 1774550986.54964 595 0c4a8a6d3317b7b34d7da3e30267e179 "pdflatex"
-  "main.nav" 1774550986.55129 307 9e520c26371a1250ff9fc1fe87f9c655 "pdflatex"
-  "main.out" 1774550986.4364 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "main.tex" 1774550982.87771 3638 b309441f434754e386459e1bbd88af45 ""
+  "main.aux" 1774551554.11011 595 0c4a8a6d3317b7b34d7da3e30267e179 "pdflatex"
+  "main.nav" 1774551554.1113 307 9e520c26371a1250ff9fc1fe87f9c655 "pdflatex"
+  "main.out" 1774551553.99621 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "main.tex" 1774551553.05608 3638 b309441f434754e386459e1bbd88af45 ""
   (generated)
   "main.aux"
   "main.log"
