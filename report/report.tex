@@ -34,12 +34,142 @@
 \DeclareMathOperator{\Var}{Var}
 \DeclareMathOperator{\corr}{corr}
 
-\title{Reinforcement Learning Project}
+\title{Reinforcement Learning Project\\
+\large Reward Misspecification and Its Impact on Learning Dynamics}
 
 \author{Victor Schmit}
 
 \date{\today}
 \begin{document}
+
 \maketitle
 
+\begin{abstract}
+	Reinforcement learning (RL) agents are designed to optimize cumulative reward, yet their performance critically depends on how this reward is specified. In this project, we investigate the impact of reward misspecification on the behavior of tabular RL algorithms. Using a simple gridworld environment, we compare the learning dynamics and resulting policies of Q-learning and SARSA under both correctly specified and intentionally biased reward functions.
+	Our experiments show that even small modifications to the reward structure can lead to significantly different behaviors, including the emergence of suboptimal or unintended strategies. In particular, we observe that off-policy methods such as Q-learning tend to exploit reward inconsistencies more aggressively, while on-policy methods like SARSA exhibit more conservative behavior under uncertainty.
+	These results highlight a fundamental limitation of reinforcement learning: agents optimize the reward signal as given, rather than the true objective intended by the designer. This study emphasizes the importance of careful reward design and provides insight into how different algorithms respond to misspecified objectives.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\section{Introduction}
+
+Reinforcement Learning (RL) provides a framework for learning sequential decision-making policies through interaction with an environment. An agent observes a state, takes an action, and receives a reward signal, with the objective of maximizing the expected cumulative reward. This paradigm has been successfully applied in a wide range of domains, from robotics to game playing.
+
+A fundamental assumption underlying RL is that the reward function correctly encodes the desired objective. However, in practice, designing such a reward function is often difficult. Small inaccuracies in reward specification can lead to unintended behaviors, as the agent optimizes the given reward rather than the true objective.
+
+In this project, we investigate the impact of reward misspecification in a simple tabular RL setting. We consider a gridworld environment and analyze how two classical algorithms, Q-learning and SARSA, behave under both correct and biased reward functions. Our goal is to highlight how different learning paradigms respond to imperfect reward signals and to illustrate the importance of careful reward design.
+
+\section{Algorithms}
+
+We consider two standard tabular reinforcement learning algorithms: Q-learning and SARSA. Both aim to estimate the action-value function $Q(s,a)$, which represents the expected return obtained by taking action $a$ in state $s$ and following a given policy thereafter.
+
+\subsection{Q-learning}\label{sub:q_learning}
+
+Q-learning is an off-policy algorithm that learns the optimal action-value function independently of the behavior policy. Its update rule is given by
+\[
+	Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a'} Q(s',a') - Q(s,a) \right),
+\]
+where $\alpha$ is the learning rate, $\gamma$ the discount factor, $r$ the reward, and $s'$ the next state.
+
+The key feature of Q-learning is that it uses a greedy estimate of future rewards through the $\max$ operator. This allows it to converge to the optimal policy under suitable conditions, but can also make it more sensitive to inaccuracies in the reward signal.
+
+\subsection{SARSA}\label{sub:sarsa}
+
+SARSA is an on-policy algorithm that updates its value estimates using the action actually taken by the current policy. Its update rule is
+\[
+	Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma Q(s',a') - Q(s,a) \right),
+\]
+where $a'$ is the next action selected according to the current policy (e.g., $\varepsilon$-greedy).
+
+Unlike Q-learning, SARSA accounts for the agent's exploration strategy in its updates. This typically results in more conservative behavior, especially in environments where risky actions can lead to large negative rewards.
+
+\section{Reward Specification}
+
+We consider a finite gridworld environment of size $N \times N$ in which an agent must navigate from a fixed start state to a goal state. At each time step, the agent selects an action in $\{\text{up}, \text{down}, \text{left}, \text{right}\}$, and transitions are deterministic. Episodes terminate when the goal is reached or after a maximum number of steps.
+
+\subsection{Environment Setup}
+
+The environment contains three types of states:
+\begin{itemize}
+	\item \textbf{Start state} $s_0$
+	\item \textbf{Goal state} $s_G$
+	\item \textbf{Dangerous states} (cliff region)
+\end{itemize}
+
+The agent is initialized at $s_0$ at the beginning of each episode.
+
+\medskip
+
+The reward function is defined differently depending on the experimental setting.
+
+\subsection{Reward Functions}
+
+We consider two reward specifications, summarized in Table~\ref{tab:rewards}.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{lcc}
+		\hline
+		\textbf{State type}      & \textbf{Correct reward} & \textbf{Misspecified reward} \\
+		\hline
+		Goal ($s_G$)             & $+10$                   & $+10$                        \\
+		Step (normal state)      & $-1$                    & $-1$                         \\
+		Cliff / dangerous state  & $-100$                  & $-100$                       \\
+		Lure region (near cliff) & $0$                     & $+2$                         \\
+		\hline
+	\end{tabular}
+	\caption{Reward specification in the two experimental settings.}
+	\label{tab:rewards}
+\end{table}
+
+\medskip
+
+In the \textbf{correct reward} setting, the reward function is aligned with the intended objective: reaching the goal as quickly as possible while avoiding dangerous states.
+
+\medskip
+
+In the \textbf{misspecified reward} setting, we introduce an additional positive reward in a specific region of the grid (referred to as the \emph{lure region}), located close to the cliff. This reward does not contribute to reaching the goal but creates an incentive for the agent to visit or remain in that region.
+
+\subsection{Experimental Protocol}
+
+We train agents using both Q-learning and SARSA over a fixed number of episodes. Action selection is performed using an $\varepsilon$-greedy policy with a decaying exploration rate. The learning rate $\alpha$ and discount factor $\gamma$ are kept constant across experiments.
+
+For each configuration, we record:
+\begin{itemize}
+	\item the cumulative reward per episode,
+	\item the evolution of the value function,
+	\item the final learned policy.
+\end{itemize}
+
+\subsection{Hypothesis}
+
+The goal of this experiment is to evaluate how different RL algorithms respond to reward misspecification.
+
+\medskip
+
+We test the following hypotheses:
+\begin{itemize}
+	\item \textbf{H1:} Under correct reward specification, both Q-learning and SARSA converge to policies that efficiently reach the goal.
+
+	\item \textbf{H2:} Under misspecified rewards, Q-learning is more likely to exploit the additional incentive and converge to suboptimal policies that favor the lure region.
+
+	\item \textbf{H3:} SARSA, being on-policy, is more sensitive to the risks induced by exploration and therefore exhibits more conservative behavior near dangerous states.
+\end{itemize}
+
+These hypotheses will be evaluated quantitatively through learning curves and qualitatively through the visualization of the learned policies.
+\section{Results}
+
+We evaluate the performance of Q-learning and SARSA under both reward settings. The experiments are conducted over multiple episodes, and we track the cumulative reward obtained by the agent as well as the learned policies.
+
+Our results show that under the correct reward specification, both algorithms converge to sensible policies that reach the goal efficiently. However, under the misspecified reward, significant differences emerge.
+
+Q-learning tends to exploit the biased reward more aggressively, often converging to policies that maximize the reward signal but do not correspond to the intended behavior. In contrast, SARSA exhibits more cautious behavior, as its on-policy updates incorporate the effects of exploration and potential risks.
+
+These observations are illustrated through learning curves and visualizations of the learned policies. The results demonstrate that even small changes in the reward function can lead to qualitatively different outcomes.
+
+\medskip
+
+Overall, this study highlights the sensitivity of reinforcement learning algorithms to reward design and emphasizes the importance of aligning the reward function with the true objective of the task.
 \end{document}
