@@ -1,0 +1,40 @@
+\documentclass[10pt]{article}
+
+\usepackage[a4paper, margin=2cm]{geometry}
+\usepackage{amsmath, amssymb}
+
+\title{\textbf{Reward Misspecification in Reinforcement Learning}}
+\author{Victor Schmit \\ CentraleSupélec}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+Reinforcement Learning (RL) agents learn by maximizing reward signals provided by the environment. But in practice, the reward function is often only a proxy for the true objective, which can lead to reward misspecification. In such cases, agents may learn behaviors that maximize reward while failing to solve the intended task, a phenomenon commonly referred to as reward hacking. Moreover, even a correctly specified reward may provide a sparse or inefficient learning signal, motivating the use of reward shaping techniques to accelerate learning. The goal of this project is therefore twofold: to study how different reward formulations affect learning dynamics, policy quality, and robustness, and to understand how principled reward shaping can mitigate misspecification while improving learning efficiency.
+
+\medskip
+
+We consider a custom Gridworld environment modeled as a Markov Decision Process $(\mathcal{S}, \mathcal{A}, P, R, \gamma)$, where the state space consists of discrete grid positions and the agent can take four actions (up, down, left, right). The environment includes a start state, a goal state, obstacles, and cliff regions associated with large penalties. In addition, stochasticity is introduced in the transition dynamics, meaning that actions may fail with some probability. This noise makes the problem more challenging and allows us to evaluate the robustness of different learning strategies.
+
+\medskip
+
+Two standard tabular reinforcement learning algorithms are implemented: Q-learning and SARSA. Q-learning is an off-policy method that updates its value estimates using a greedy target, which allows it to approximate the optimal policy more directly and typically results in faster convergence. In contrast, SARSA is an on-policy method that updates its estimates using the action actually taken under the current policy, thereby incorporating the effects of exploration and environmental stochasticity. As a consequence, SARSA tends to learn more conservatively and often exhibits greater robustness in stochastic environments. Both algorithms are evaluated under identical conditions and across multiple reward formulations in order to assess whether the observed effects are intrinsic to the reward design rather than dependent on the specific learning algorithm.
+
+\medskip
+
+For the different rewards formulations, the first setting corresponds to a correctly specified reward, combining a positive reward for reaching the goal, a step penalty to encourage shorter paths, and a strong penalty for falling into cliffs. The second setting introduces a misspecified reward by adding a shaping term based on proximity to the goal, which provides a denser signal but can bias the agent toward locally attractive yet suboptimal behaviors. Finally, we consider potential-based reward shaping, defined as
+\[
+	R'(s,a,s') = R(s,a,s') + \gamma \Phi(s') - \Phi(s),
+\]
+where $\Phi(s)$ is a potential function, for instance the negative distance to the goal. This transformation is known to preserve the optimal policy while improving learning efficiency by providing additional guidance during exploration.
+
+\medskip
+
+Experimental results show that reward design has a major impact on both learning speed and final performance. With the correct reward, agents reliably converge to optimal policies. In contrast, misspecified rewards can induce reward hacking, where the agent achieves high return without reaching the goal. Potential-based shaping significantly accelerates learning while maintaining optimal behavior. Furthermore, the presence of stochastic transitions highlights differences between algorithms: Q-learning converges faster but is more sensitive to noise and reward bias, while SARSA learns more slowly but exhibits greater robustness due to its on-policy nature.
+
+\medskip
+
+Overall, this project demonstrates that reward design is a critical component of reinforcement learning. Even in simple environments, small changes in the reward function can lead to large differences in behavior. Carefully designed shaping methods, such as potential-based rewards, offer an effective way to guide learning while preserving the underlying objective.
+
+\end{document}

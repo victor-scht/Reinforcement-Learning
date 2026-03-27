@@ -1,57 +1,81 @@
 from __future__ import annotations
 
 import argparse
-import subprocess
-import sys
-from pathlib import Path
+from typing import List
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run a small suite of experiments for the poster.")
-    parser.add_argument("--episodes", type=int, default=700)
-    parser.add_argument("--output-root", type=Path, default=Path("outputs/suite"))
-    parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
-    parser.add_argument("--algorithms", nargs="+", default=["q_learning", "sarsa"])
-    parser.add_argument("--reward-modes", nargs="+", default=["correct", "lure"])
-    parser.add_argument("--width", type=int, default=8)
-    parser.add_argument("--height", type=int, default=5)
-    parser.add_argument("--alpha", type=float, default=0.5)
-    parser.add_argument("--gamma", type=float, default=0.99)
-    parser.add_argument("--epsilon", type=float, default=0.15)
+from rl_reward_project.training import TrainConfig, train
+from rl_reward_project.utils.io_utils import ensure_dir
+from visualization import compare_metrics
+
+
+DEFAULT_ALGOS = ["q_learning", "sarsa"]
+DEFAULT_REWARD_MODES = ["correct", "proximity_bad", "potential"]
+
+
+def make_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Run an experiment suite over algorithms, reward modes, and seeds."
+    )
+    parser.add_argument("--algorithms", nargs="+", default=DEFAULT_ALGOS)
+    parser.add_argument("--reward-modes", nargs="+", default=DEFAULT_REWARD_MODES)
+    parser.add_argument("--episodes", type=int, default=1000)
+    parser.add_argument("--alpha", type=float, default=0.2)
+    parser.add_argument("--gamma", type=float, default=0.95)
+    parser.add_argument("--epsilon", type=float, default=0.20)
     parser.add_argument("--epsilon-min", type=float, default=0.02)
     parser.add_argument("--epsilon-decay", type=float, default=0.995)
-    parser.add_argument("--lure-bonus", type=float, default=6.0)
+    parser.add_argument("--optimistic-init", type=float, default=0.0)
+    parser.add_argument("--moving-average", type=int, default=50)
+    parser.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2])
+    parser.add_argument("--output-root", type=str, default="outputs/experiment_suite")
     return parser
 
 
 def main() -> None:
-    args = build_parser().parse_args()
-    project_root = Path(__file__).resolve().parent
-    train_script = project_root / "train.py"
+    args = make_parser().parse_args()
+    output_root = ensure_dir(args.output_root)
+    metric_paths: List[str] = []
+    labels: List[str] = []
 
-    for reward_mode in args.reward_modes:
-        for algorithm in args.algorithms:
+    for algo in args.algorithms:
+        for reward_mode in args.reward_modes:
             for seed in args.seeds:
-                run_dir = args.output_root / reward_mode / algorithm / f"seed_{seed}"
-                cmd = [
-                    sys.executable,
-                    str(train_script),
-                    "--algorithm", algorithm,
-                    "--reward-mode", reward_mode,
-                    "--episodes", str(args.episodes),
-                    "--width", str(args.width),
-                    "--height", str(args.height),
-                    "--alpha", str(args.alpha),
-                    "--gamma", str(args.gamma),
-                    "--epsilon", str(args.epsilon),
-                    "--epsilon-min", str(args.epsilon_min),
-                    "--epsilon-decay", str(args.epsilon_decay),
-                    "--lure-bonus", str(args.lure_bonus),
-                    "--seed", str(seed),
-                    "--output-dir", str(run_dir),
-                ]
-                print("Running:", " ".join(cmd))
-                subprocess.run(cmd, check=True)
+                run_dir = output_root / f"{algo}__{reward_mode}__seed{seed}"
+                config = TrainConfig(
+                    algorithm=algo,
+                    reward_mode=reward_mode,
+                    episodes=args.episodes,
+                    alpha=args.alpha,
+                    gamma=args.gamma,
+                    epsilon=args.epsilon,
+                    epsilon_min=args.epsilon_min,
+                    epsilon_decay=args.epsilon_decay,
+                    optimistic_init=args.optimistic_init,
+                    seed=seed,
+                    moving_average=args.moving_average,
+                    output_dir=str(run_dir),
+                )
+                train(config)
+                metric_paths.append(str(run_dir / "metrics.csv"))
+                labels.append(f"{algo}-{reward_mode}-s{seed}")
+
+    compare_dir = ensure_dir(output_root / "comparisons")
+    compare_metrics(
+        metric_paths,
+        labels,
+        "episode_return",
+        compare_dir / "all_returns.png",
+        args.moving_average,
+    )
+    compare_metrics(
+        metric_paths,
+        labels,
+        "success",
+        compare_dir / "all_success.png",
+        args.moving_average,
+    )
+    print(f"Experiment suite finished. Outputs saved to {output_root}")
 
 
 if __name__ == "__main__":

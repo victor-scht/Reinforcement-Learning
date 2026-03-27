@@ -1,0 +1,2 @@
+Training finished.
+{'episodes': 1000, 'mean_return': 3.3348500000000123, 'mean_length': 24.192, 'success_rate': 0.973, 'tail_mean_return': 11.074000000000007, 'tail_success_rate': 1.0, 'tail_mean_length': 16.57, 'total_cliff_hits': 121, 'total_risky_visits': 1101}

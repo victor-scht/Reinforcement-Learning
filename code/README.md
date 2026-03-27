@@ -1,135 +1,77 @@
-# Reward Misspecification in Tabular Reinforcement Learning
+# RL Reward Misspecification Project
 
-A lightweight, poster-friendly RL project designed for fast experiments and clean visualizations.
+This project studies how different reward functions affect learning and behavior in tabular reinforcement learning.
 
-## Project idea
+It includes:
+- A custom gridworld environment with walls, a start state, a goal state, and an optional risky region.
+- Tabular Q-learning and SARSA.
+- Three reward modes:
+  - `correct`: sparse task-aligned reward.
+  - `proximity_bad`: a naive dense shaping reward that gives a bonus for being near the goal at every step.
+  - `potential`: potential-based shaping, which preserves the optimal policy in theory.
+- Logging of learning curves and state visit statistics.
+- Visualization utilities for learning curves, policy arrows, value heatmaps, and trajectory plots.
 
-The project studies a simple but interesting question:
+## Why these reward modes?
 
-**What happens when the reward function is slightly wrong?**
+The project is inspired by classic and modern work on reward shaping and reward misspecification:
 
-The environment is a small gridworld with a goal and a cliff. In the `lure` reward setting, some cells above the cliff give a positive bonus. This can attract the agent toward behaviors that are good for the reward signal but not ideal for the intended task.
+1. **Ng, Harada, and Russell (1999)** showed that only a specific family of shaping rewards—potential-based shaping—guarantees policy invariance. This motivates the `potential` mode.
+2. **Amodei et al. (2016)** discuss reward hacking as a concrete safety problem: agents optimize the specified objective, not the intended one.
+3. **Lilian Weng (2024)** provides a broad modern survey of reward hacking and specification gaming in RL.
 
-This lets you compare how different tabular control algorithms behave under reward misspecification.
+The `proximity_bad` reward is intentionally designed to sound reasonable to a practitioner (“reward the agent for staying close to the goal”), but it can produce poor behavior such as hovering near the goal instead of finishing the task.
 
-## Included algorithms
+## References
 
-- Q-learning
-- SARSA
-- Expected SARSA
+- Andrew Y. Ng, Daishi Harada, and Stuart Russell. *Policy Invariance Under Reward Transformations: Theory and Application to Reward Shaping*. ICML 1999.
+- Dario Amodei et al. *Concrete Problems in AI Safety*. arXiv:1606.06565, 2016.
+- Lilian Weng. *Reward Hacking in Reinforcement Learning*, 2024.
 
-## Folder structure
-
-```text
-reward_misspec_rl_project/
-├── agents/
-│   ├── base.py
-│   ├── expected_sarsa.py
-│   ├── q_learning.py
-│   └── sarsa.py
-├── envs/
-│   └── gridworld.py
-├── utils/
-│   └── metrics.py
-├── visualization.py
-├── train.py
-├── run_experiments.py
-├── requirements.txt
-└── README.md
-```
-
-## Install
+## Installation
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
 ## Quick start
 
-### 1) Train one run
+Train Q-learning with the task-aligned reward:
 
 ```bash
-python train.py \
-  --algorithm q_learning \
-  --reward-mode lure \
-  --episodes 700 \
-  --alpha 0.5 \
-  --epsilon 0.15 \
-  --epsilon-decay 0.995 \
-  --output-dir outputs/q_learning_lure
+python train.py --algorithm q_learning --reward-mode correct --episodes 1000 --output-dir outputs/q_correct
 ```
 
-### 2) Train a baseline with the correct reward
+Train SARSA with the naive shaping reward:
 
 ```bash
-python train.py \
-  --algorithm q_learning \
-  --reward-mode correct \
-  --episodes 700 \
-  --output-dir outputs/q_learning_correct
+python train.py --algorithm sarsa --reward-mode proximity_bad --episodes 1000 --output-dir outputs/sarsa_bad
 ```
 
-### 3) Compare learning curves
+Compare runs:
 
 ```bash
 python visualization.py compare \
-  --metrics outputs/q_learning_correct/metrics.csv outputs/q_learning_lure/metrics.csv \
-  --labels correct lure \
-  --metric reward \
-  --output outputs/comparisons/q_learning_reward_compare.png
+  --metrics outputs/q_correct/metrics.csv outputs/sarsa_bad/metrics.csv \
+  --labels Q_correct SARSA_bad \
+  --metric episode_return \
+  --output outputs/compare_return.png
 ```
 
-## What gets saved
+Run a full experiment suite:
 
-Each training run saves:
+```bash
+python run_experiments.py --episodes 1200 --seeds 0 1 2 --output-root outputs/benchmark
+```
 
-- `metrics.csv` with full per-episode learning curves
-- `summary.json` with final summary statistics
-- `q_table.npy`
-- `policy_ascii.txt`
-- `figures/learning_curve_*.png`
-- `figures/policy.png`
-- `figures/value_heatmap.png`
+## Output files
 
-## Suggested experiments for the poster
+Each run directory contains:
+- `metrics.csv`: per-episode learning curves
+- `summary.json`: aggregate stats
+- `config.json`: exact run configuration
+- `q_table.npy`: learned action-value table
+- `figures/`: plots and policy visualizations
 
-### Experiment 1: Correct reward vs misspecified reward
-
-- same algorithm
-- same hyperparameters
-- compare learned policy and learning curves
-
-### Experiment 2: Q-learning vs SARSA under misspecified reward
-
-- compare risky vs conservative behavior
-- use `cliff_hits` and `reward` curves
-
-### Experiment 3: Effect of stochasticity
-
-- run with `--slip-prob 0.05` or `0.1`
-- see whether the misspecified reward becomes even more problematic
-
-## Main CLI arguments
-
-- `--algorithm {q_learning,sarsa,expected_sarsa}`
-- `--episodes`
-- `--alpha`
-- `--gamma`
-- `--epsilon`
-- `--epsilon-min`
-- `--epsilon-decay`
-- `--reward-mode {correct,lure,right_bonus}`
-- `--slip-prob`
-- `--lure-bonus`
-- `--output-dir`
-
-## Poster tip
-
-A strong poster structure would be:
-
-1. Problem statement: reward misspecification
-2. Environment design
-3. Algorithms
-4. Learning curves
-5. Learned policy visualizations
-6. Main conclusion: RL optimizes the reward you specify, not the task you intended

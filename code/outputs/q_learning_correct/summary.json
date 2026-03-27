@@ -1,13 +1,11 @@
 {
-  "episodes": 700.0,
-  "mean_reward_last_n": 6.9,
-  "mean_length_last_n": 9.1,
-  "success_rate_last_n": 1.0,
-  "mean_cliff_hits_last_n": 0.0,
-  "mean_lure_visits_last_n": 0.0,
-  "final_epsilon": 0.02,
-  "eval_reward_mean": 7.0,
-  "eval_length_mean": 9.0,
-  "eval_success_rate": 1.0,
-  "eval_cliff_hits_mean": 0.0
+  "episodes": 500,
+  "mean_return": -40.83,
+  "mean_length": 40.506,
+  "success_rate": 0.902,
+  "tail_mean_return": -24.34,
+  "tail_success_rate": 0.94,
+  "tail_mean_length": 28.18,
+  "total_cliff_hits": 116,
+  "total_risky_visits": 886
 }

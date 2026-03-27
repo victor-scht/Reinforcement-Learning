@@ -1,0 +1,75 @@
+{
+  "train": {
+    "algorithm": "sarsa",
+    "reward_mode": "potential",
+    "episodes": 500,
+    "alpha": 0.2,
+    "gamma": 0.95,
+    "epsilon": 0.2,
+    "epsilon_min": 0.02,
+    "epsilon_decay": 0.995,
+    "optimistic_init": 0.0,
+    "seed": 0,
+    "output_dir": "outputs/sarsa_potential",
+    "moving_average": 50
+  },
+  "environment": {
+    "grid": {
+      "rows": 8,
+      "cols": 9,
+      "start": [
+        6,
+        0
+      ],
+      "goal": [
+        0,
+        8
+      ],
+      "max_steps": 150,
+      "cliff_cells": [
+        [
+          5,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "reward": {
+      "step_penalty": -1.0,
+      "goal_reward": 10.0,
+      "cliff_penalty": -25.0,
+      "risk_penalty": -2.0,
+      "bad_proximity_scale": 7.0,
+      "potential_scale": 1.0,
+      "gamma": 0.95
+    },
+    "reward_mode": "potential"
+  }
+}

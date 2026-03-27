@@ -1,0 +1,11 @@
+{
+  "episodes": 500,
+  "mean_return": -49.204,
+  "mean_length": 48.45,
+  "success_rate": 0.826,
+  "tail_mean_return": -12.54,
+  "tail_success_rate": 1.0,
+  "tail_mean_length": 18.54,
+  "total_cliff_hits": 101,
+  "total_risky_visits": 991
+}

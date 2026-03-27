@@ -1,10 +1,12 @@
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
 \contentsline {section}{\numberline {2}Algorithms}{2}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Q-learning}{2}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}SARSA}{2}{subsection.2.2}%
-\contentsline {section}{\numberline {3}Reward Specification}{3}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Environment Setup}{3}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Reward Functions}{3}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Experimental Protocol}{3}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Hypothesis}{3}{subsection.3.4}%
-\contentsline {section}{\numberline {4}Results}{4}{section.4}%
+\contentsline {section}{\numberline {3}Environment}{2}{section.3}%
+\contentsline {section}{\numberline {4}Reward Specification}{2}{section.4}%
+\contentsline {section}{\numberline {5}Experimental Protocol}{3}{section.5}%
+\contentsline {section}{\numberline {6}Results}{3}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Learning curves and success rates}{3}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Value functions}{4}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}State visitation}{5}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Policies}{6}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Trajectories}{6}{subsection.6.5}%
+\contentsline {section}{\numberline {7}Conclusion}{7}{section.7}%

@@ -1,0 +1,58 @@
+\usetheme{default} % or metropolis-like styling later
+
+% Colors
+\definecolor{MyBlue}{RGB}{25,70,140}
+
+
+\setbeamercolor{headline}{bg=MyBlue, fg=white}
+
+\setbeamertemplate{headline}{
+	\begin{beamercolorbox}[wd=\paperwidth,ht=6cm,center]{headline}
+		\vspace{0cm}
+		{\usebeamerfont{title}\color{white}\inserttitle\par}
+		\vspace{0.5cm}
+		{\usebeamerfont{author}\color{white}\insertauthor\par}
+		{\usebeamerfont{institute}\color{white}\insertinstitute\par}
+		\vspace{1cm}
+	\end{beamercolorbox}
+}
+
+\setbeamertemplate{block begin}{
+	\vspace{1.5ex}
+	\noindent
+	{\usebeamerfont{block title}\bfseries
+		\usebeamercolor[fg]{block title}\insertblocktitle}
+	\par
+	% \vspace{0.1ex}
+	\noindent\rule{\linewidth}{2.pt}
+	% \vspace{0.8ex}
+	\usebeamerfont{block body}
+}
+\setbeamertemplate{block end}{
+	\vspace{1.5ex}
+}
+
+\setlength{\parskip}{1em}
+\setbeamerfont{block body}{size=\large}
+\setbeamerfont{block title}{size=\huge}
+
+\setbeamercolor{block alerted title}{fg=black}
+\setbeamercolor{block alerted body}{bg=gray!15, fg=black}
+
+\setbeamertemplate{block alerted begin}{
+	\vspace{1ex}
+	\begin{beamercolorbox}[wd=\linewidth,sep=1em]{block alerted body}
+		{\bfseries\insertblocktitle\par}
+		\vspace{0.5ex}
+		}
+
+		\setbeamertemplate{block alerted end}{
+	\end{beamercolorbox}
+	\vspace{1ex}
+}
+
+\setlength{\columnsep}{2cm}
+
+\setbeamerfont{title}{size=\Huge,series=\bfseries}
+\setbeamerfont{author}{size=\Large}
+\setbeamerfont{institute}{size=\large}

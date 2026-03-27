@@ -1,69 +1,322 @@
+% \documentclass[final]{beamer}
+%
+% \usepackage[size=a1,orientation=portrait,scale=1.0]{beamerposter}
+% \usepackage{./template}
+% \usepackage{graphicx}
+%
+% \title{Reward Misspecification and Its Impact on Learning Dynamics}
+% \author{Victor Schmit}
+% \institute{Centrale Supélec}
+%
+% \begin{document}
+%
+% \begin{frame}[t]
+%
+% 	\begin{columns}[t]
+%
+% 		% =========================================================
+% 		% COLUMN 1 — THEORY + WHY THINGS HAPPEN
+% 		% =========================================================
+% 		\begin{column}{0.32\textwidth}
+%
+% 			\begin{block}{Motivation}
+% 				\begin{itemize}
+% 					\item RL optimizes \textbf{reward}, not intent
+% 					\item Misaligned rewards $\rightarrow$ unintended behaviors
+% 					\item Goal: isolate impact of reward design
+% 				\end{itemize}
+% 			\end{block}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{block}{Environment}
+% 				\begin{itemize}
+% 					\item Gridworld with obstacles and cliffs
+% 					\item Multiple valid paths
+% 					\item Risky shortcut regions
+% 				\end{itemize}
+%
+% 				\medskip
+% 				\textbf{Non-trivial optimal policy} reveals reward effects
+% 			\end{block}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{block}{Reward Functions}
+%
+% 				\textbf{Correct}
+% 				\[
+% 					R = \begin{cases}
+% 						+10 & \text{goal}  \\
+% 						-1  & \text{step}  \\
+% 						-50 & \text{cliff}
+% 					\end{cases}
+% 				\]
+%
+% 				\textbf{Proximity (bad)}
+% 				\[
+% 					R' = R + \beta (-d(s,G))
+% 				\]
+%
+% 				\textbf{Potential shaping}
+% 				\[
+% 					R_{\text{pot}} = R + \gamma \Phi(s') - \Phi(s), \quad \Phi(s)=-d(s,G)
+% 				\]
+%
+% 			\end{block}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{block}{Learning Dynamics: Why It Works (or Fails)}
+%
+% 				\textbf{Correct reward}
+% 				\begin{itemize}
+% 					\item sparse but aligned signal
+% 					\item slow exploration $\rightarrow$ correct convergence
+% 				\end{itemize}
+%
+% 				\medskip
+%
+% 				\textbf{Proximity reward}
+% 				\begin{itemize}
+% 					\item dense signal
+% 					\item agent maximizes proximity instead of reaching goal
+% 					\item \textbf{reward hacking}
+% 				\end{itemize}
+%
+% 				\medskip
+%
+% 				\textbf{Potential reward}
+% 				\begin{itemize}
+% 					\item adds dense signal WITHOUT changing optimal policy
+% 					\item accelerates learning
+% 					\item theoretically sound shaping
+% 				\end{itemize}
+%
+% 			\end{block}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{block}{Q-learning vs SARSA}
+%
+% 				\textbf{Q-learning (off-policy)}
+% 				\begin{itemize}
+% 					\item learns $\max_a Q(s,a)$
+% 					\item assumes optimal future behavior
+% 					\item \textbf{faster but aggressive}
+% 				\end{itemize}
+%
+% 				\medskip
+%
+% 				\textbf{SARSA (on-policy)}
+% 				\begin{itemize}
+% 					\item learns $Q(s,a)$ under exploration
+% 					\item includes randomness in updates
+% 					\item \textbf{slower but safer}
+% 				\end{itemize}
+%
+% 				\medskip
+%
+% 				\textbf{Key insight}
+% 				\begin{itemize}
+% 					\item SARSA is slower because it learns from \textbf{noisy actions}
+% 					\item Q-learning propagates optimal values faster
+% 				\end{itemize}
+%
+% 			\end{block}
+%
+% 		\end{column}
+%
+% 		% =========================================================
+% 		% COLUMN 2 — LEARNING + VALUE ANALYSIS
+% 		% =========================================================
+% 		\begin{column}{0.34\textwidth}
+%
+% 			\begin{block}{Learning Curves}
+%
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{Q-learning}
+% 					\includegraphics[width=\linewidth]{./figures/plots/q_learning_return.png}
+% 				\end{minipage}
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{SARSA}
+% 					\includegraphics[width=\linewidth]{./figures/plots/sarsa_return.png}
+% 				\end{minipage}
+%
+% 				\medskip
+%
+% 				\begin{itemize}
+% 					\item Q-learning converges faster
+% 					\item SARSA smoother but slower
+% 					\item reward impacts dominate algorithm choice
+% 				\end{itemize}
+%
+% 			\end{block}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{block}{Success Rate}
+%
+% 				\begin{center}
+% 					\includegraphics[width=0.9\linewidth]{./figures/plots/all_success.png}
+% 				\end{center}
+%
+% 				\begin{itemize}
+% 					\item Potential $\rightarrow$ fastest success
+% 					\item Correct $\rightarrow$ stable
+% 					\item Proximity $\rightarrow$ failure despite high reward
+% 				\end{itemize}
+%
+% 			\end{block}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{block}{Value Functions Comparison}
+%
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{Q Correct}
+% 					\includegraphics[width=\linewidth]{./figures/q_learning_correct/figures/value_heatmap.png}
+% 				\end{minipage}
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{Q Bad}
+% 					\includegraphics[width=\linewidth]{./figures/q_learning_proximity_bad/figures/value_heatmap.png}
+% 				\end{minipage}
+%
+% 				\medskip
+%
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{SARSA Correct}
+% 					\includegraphics[width=\linewidth]{./figures/sarsa_correct/figures/value_heatmap.png}
+% 				\end{minipage}
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{SARSA Bad}
+% 					\includegraphics[width=\linewidth]{./figures/sarsa_proximity_bad/figures/value_heatmap.png}
+% 				\end{minipage}
+%
+% 				\medskip
+%
+% 				\begin{itemize}
+% 					\item Correct $\rightarrow$ gradient to goal
+% 					\item Proximity $\rightarrow$ distorted landscape
+% 					\item SARSA smoother values
+% 				\end{itemize}
+%
+% 			\end{block}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{block}{State Visitation}
+%
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{Q Bad}
+% 					\includegraphics[width=\linewidth]{./figures/q_learning_proximity_bad/figures/state_visits.png}
+% 				\end{minipage}
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{SARSA Bad}
+% 					\includegraphics[width=\linewidth]{./figures/sarsa_proximity_bad/figures/state_visits.png}
+% 				\end{minipage}
+%
+% 				\medskip
+%
+% 				\begin{itemize}
+% 					\item strong concentration of visits
+% 					\item exploitation of biased reward
+% 				\end{itemize}
+%
+% 			\end{block}
+%
+% 		\end{column}
+%
+% 		% =========================================================
+% 		% COLUMN 3 — POLICIES + INSIGHT
+% 		% =========================================================
+% 		\begin{column}{0.32\textwidth}
+%
+% 			\begin{block}{Policies and Trajectories}
+%
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{Q-learning (bad)}
+% 					\includegraphics[width=\linewidth]{./figures/q_learning_proximity_bad/figures/policy.png}
+% 					\includegraphics[width=\linewidth]{./figures/q_learning_proximity_bad/figures/greedy_trajectory.png}
+% 				\end{minipage}
+% 				\begin{minipage}{0.49\textwidth}
+% 					\centering
+% 					\textbf{SARSA (bad)}
+% 					\includegraphics[width=\linewidth]{./figures/sarsa_proximity_bad/figures/policy.png}
+% 					\includegraphics[width=\linewidth]{./figures/sarsa_proximity_bad/figures/greedy_trajectory.png}
+% 				\end{minipage}
+%
+% 			\end{block}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{block}{Failure Mechanism}
+%
+% 				\begin{itemize}
+% 					\item Agent maximizes reward density
+% 					\item Not aligned with terminal objective
+% 					\item Leads to:
+% 					      \begin{itemize}
+% 						      \item loops
+% 						      \item local exploitation
+% 						      \item no task completion
+% 					      \end{itemize}
+% 				\end{itemize}
+%
+% 			\end{block}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{alertblock}{Main Insight}
+% 				\begin{center}
+% 					\Large
+% 					High reward $\neq$ correct behavior \\
+% 					\medskip
+% 					Agents optimize the reward, not the task
+% 				\end{center}
+% 			\end{alertblock}
+%
+% 			% ---------------------------------------------------------
+%
+% 			\begin{block}{Conclusion}
+%
+% 				\begin{itemize}
+% 					\item Reward design is critical
+% 					\item Misspecification $\rightarrow$ reward hacking
+% 					\item Potential shaping:
+% 					      \begin{itemize}
+% 						      \item fast
+% 						      \item stable
+% 						      \item theoretically sound
+% 					      \end{itemize}
+% 					\item Algorithm choice is secondary to reward design
+% 				\end{itemize}
+%
+% 			\end{block}
+%
+% 		\end{column}
+%
+% 	\end{columns}
+%
+% \end{frame}
+%
+% \end{document}
 \documentclass[final]{beamer}
 
-\usepackage[size=a1,scale=1.]{beamerposter}
+\usepackage[size=a1,orientation=portrait,scale=1.0]{beamerposter}
+\usepackage{./template}
+\usepackage{graphicx}
 
-\usetheme{default} % or metropolis-like styling later
-
-% Colors
-\definecolor{MyBlue}{RGB}{25,70,140}
-
-
-\setbeamercolor{headline}{bg=MyBlue, fg=white}
-
-\setbeamertemplate{headline}{
-  \begin{beamercolorbox}[wd=\paperwidth,ht=6cm,center]{headline}
-    \vspace{0cm}
-    {\usebeamerfont{title}\color{white}\inserttitle\par}
-    \vspace{0.5cm}
-    {\usebeamerfont{author}\color{white}\insertauthor\par}
-    {\usebeamerfont{institute}\color{white}\insertinstitute\par}
-    \vspace{1cm}
-  \end{beamercolorbox}
-}
-
-\setbeamertemplate{block begin}{
-  \vspace{1.5ex}
-  \noindent
-  {\usebeamerfont{block title}\bfseries
-   \usebeamercolor[fg]{block title}\insertblocktitle}
-  \par
-  % \vspace{0.1ex}
-  \noindent\rule{\linewidth}{2.pt}
-  % \vspace{0.8ex}
-  \usebeamerfont{block body}
-}
-\setbeamertemplate{block end}{
-  \vspace{1.5ex}
-}
-
-\setlength{\parskip}{1em}
-\setbeamerfont{block body}{size=\large}
-\setbeamerfont{block title}{size=\huge}
-
-\setbeamercolor{block alerted title}{fg=black}
-\setbeamercolor{block alerted body}{bg=gray!15, fg=black}
-
-\setbeamertemplate{block alerted begin}{
-  \vspace{1ex}
-  \begin{beamercolorbox}[wd=\linewidth,sep=1em]{block alerted body}
-  {\bfseries\insertblocktitle\par}
-  \vspace{0.5ex}
-}
-
-\setbeamertemplate{block alerted end}{
-  \end{beamercolorbox}
-  \vspace{1ex}
-}
-
-\setlength{\columnsep}{2cm}
-
-\setbeamerfont{title}{size=\Huge,series=\bfseries}
-\setbeamerfont{author}{size=\Large}
-\setbeamerfont{institute}{size=\large}
-
-% Title info
 \title{Reward Misspecification and Its Impact on Learning Dynamics}
-
 \author{Victor Schmit}
 \institute{Centrale Supélec}
 
@@ -71,46 +324,531 @@
 
 \begin{frame}[t]
 
-	% \maketitle
 	\begin{columns}[t]
 
-		% -------- Column 1 --------
+		% =========================================================
+		% COLUMN 1 — THEORY + SETUP
+		% =========================================================
 		\begin{column}{0.32\textwidth}
-			\begin{block}{Introduction}
+
+			% \begin{block}{Motivation}
+			%
+			% 	\begin{itemize}
+			% 		\item RL agents maximize \textbf{reward}, not intended objective
+			% 		\item Misaligned rewards $\rightarrow$ unintended behaviors
+			% 		\item Known issue: \textbf{reward hacking} (Amodei et al., 2016)
+			% 	\end{itemize}
+			%
+			% \end{block}
+
+
+			\begin{block}{Motivation}
+
 				\begin{itemize}
-					\item Reinforcement learning (RL) agents are designed to optimize cumulative reward, yet their performance critically depends on how this reward is specified. In this project, we investigate the impact of reward misspecification on the behavior of tabular RL algorithms. Using a simple gridworld environment, we compare the learning dynamics and resulting policies of Q-learning and SARSA under both correctly specified and intentionally biased reward functions.
+					\item Reinforcement Learning (RL) agents optimize the \textbf{reward function}, not the true objective.
 
 					      \medskip
 
-					\item Our experiments show that even small modifications to the reward structure can lead to significantly different behaviors, including the emergence of suboptimal or unintended strategies. In particular, we observe that off-policy methods such as Q-learning tend to exploit reward inconsistencies more aggressively, while on-policy methods like SARSA exhibit more conservative behavior under uncertainty.
+					\item In practice, reward functions are often \textbf{imperfect proxies} of the desired behavior.
 
 					      \medskip
 
-					\item These results highlight a fundamental limitation of reinforcement learning: agents optimize the reward signal as given, rather than the true objective intended by the designer. This study emphasizes the importance of careful reward design and provides insight into how different algorithms respond to misspecified objectives.
+					\item This mismatch can lead to:
+
+					      \medskip
+
+					      \begin{itemize}
+						      \item unintended strategies
+
+						            \medskip
+
+						      \item suboptimal or unsafe behaviors
+
+						            \medskip
+
+						      \item complete task failure despite high reward
+					      \end{itemize}
 				\end{itemize}
+
+				\medskip
+
+				\begin{alertblock}{Key issue}
+
+
+					\centerline{\textit{``Agents do exactly what you reward, not what you intend.''}}
+
+					\medskip
+
+					This phenomenon is known as \textbf{reward misspecification} or \textbf{reward hacking} (Amodei et al., 2016).
+
+				\end{alertblock}
+
+
 			\end{block}
 
-			\begin{block}{Methods}
+			% ---------------------------------------------------------
 
-				Your methods
+			\begin{block}{Environment}
+
+				\begin{itemize}
+					\item Gridworld with obstacles, cliffs, risky zones
+					\item Multiple possible paths (no trivial solution)
+					\item \textbf{Stochastic transitions}:
+
+					      \medskip
+
+					      \begin{itemize}
+						      \item action noise (slip probability)
+
+						            \medskip
+
+						      \item intended action not always executed
+					      \end{itemize}
+				\end{itemize}
+
+				\medskip
+
+				\textbf{Impact:}
+				\begin{itemize}
+					\item harder exploration
+					\item increases importance of reward signal
+				\end{itemize}
+
+			\end{block}
+
+			% ---------------------------------------------------------
+
+			\begin{block}{Reward Design and Theory}
+
+				\textbf{Correct reward}
+				\[
+					R(s,a)=
+					\begin{cases}
+						+10 & \text{goal}  \\
+						-1  & \text{step}  \\
+						-50 & \text{cliff}
+					\end{cases}
+				\]
+
+				\medskip
+
+				\textbf{Misspecified reward (reward hacking)}
+				\[
+					R'(s,a)=R(s,a)+\beta \cdot (-d(s,G))
+				\]
+
+				\begin{itemize}
+					\item dense but biased signal
+					\item encourages proximity instead of success
+				\end{itemize}
+
+				\medskip
+
+				\textbf{Potential-based shaping (Ng et al., 1999)}
+				\[
+					R_{\text{pot}}(s,a,s')=R(s,a)+\gamma \Phi(s')-\Phi(s)
+				\]
+
+				\begin{itemize}
+					\item $\Phi(s)=-d(s,G)$
+					\item \textbf{guarantee: optimal policy unchanged}
+					\item improves learning speed
+				\end{itemize}
+
+				\begin{alertblock}{Learning Dynamics (Intuition)}
+
+					\begin{itemize}
+						\item Correct reward: sparse $\rightarrow$ slow but correct
+						\item Proximity reward: dense $\rightarrow$ fast but wrong
+						\item Potential shaping:
+						      \begin{itemize}
+							      \item dense signal
+
+							            \medskip
+
+							      \item preserves optimal policy
+
+							            \medskip
+
+							      \item \textbf{best trade-off}
+						      \end{itemize}
+					\end{itemize}
+
+				\end{alertblock}
+
+			\end{block}
+
+			% ---------------------------------------------------------
+
+			\begin{block}{Learning Algorithms}
+
+				\textbf{Q-learning (off-policy)}
+				\[
+					Q \leftarrow r + \gamma \max_a Q
+				\]
+
+				\textbf{SARSA (on-policy)}
+				\[
+					Q \leftarrow r + \gamma Q(a')
+				\]
+
+				\medskip
+
+				\textbf{Key difference}
+
+				\begin{itemize}
+					\item Q-learning assumes optimal future
+					\item SARSA learns under exploration policy
+				\end{itemize}
+
+				\medskip
+
+				% \textbf{Why SARSA is slower}
+				%
+				% \begin{itemize}
+				% 	\item incorporates noisy actions (due to $\epsilon$ + environment noise)
+				% 	\item propagates conservative values
+				% 	\item safer but slower convergence
+				% \end{itemize}
+
+			\end{block}
+
+			% ---------------------------------------------------------
+
+
+		\end{column}
+
+		% =========================================================
+		% COLUMN 2 — LEARNING + VALUES
+		% =========================================================
+		\begin{column}{0.34\textwidth}
+
+			\begin{block}{Learning Performance}
+
+				\begin{center}
+					\includegraphics[width=0.9\linewidth]{./figures/plots/q_learning_return.png}
+				\end{center}
+
+				\begin{center}
+					\includegraphics[width=0.9\linewidth]{./figures/plots/sarsa_return.png}
+				\end{center}
+
+				\begin{itemize}
+					\item Q-learning converges faster (optimistic updates)
+					\item SARSA slower due to on-policy + noise
+					\item Bad reward: high return but misleading
+					\item Potential shaping: fastest stable learning
+				\end{itemize}
+
+			\end{block}
+			% ---------------------------------------------------------
+
+			\begin{block}{Success Rate}
+
+				\begin{center}
+					\includegraphics[width=0.9\linewidth]{./figures/plots/all_success.png}
+				\end{center}
+
+				\begin{itemize}
+					\item Proximity reward fails completely (reward hacking)
+					\item High return $\neq$ task success
+					\item Potential shaping achieves fastest reliable success
+					\item SARSA more robust under noise but slower
+				\end{itemize}
+
+			\end{block}
+			% ---------------------------------------------------------
+
+			\begin{block}{Value Functions (All Settings)}
+
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{Q Correct}
+					\includegraphics[width=\linewidth]{./figures/q_learning_correct/figures/value_heatmap.png}
+				\end{minipage}
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{Q Bad}
+					\includegraphics[width=\linewidth]{./figures/q_learning_proximity_bad/figures/value_heatmap.png}
+				\end{minipage}
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{Q Potential}
+					\includegraphics[width=\linewidth]{./figures/q_learning_potential/figures/value_heatmap.png}
+				\end{minipage}
+
+				\medskip
+
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{SARSA Correct}
+					\includegraphics[width=\linewidth]{./figures/sarsa_correct/figures/value_heatmap.png}
+				\end{minipage}
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{SARSA Bad}
+					\includegraphics[width=\linewidth]{./figures/sarsa_proximity_bad/figures/value_heatmap.png}
+				\end{minipage}
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{SARSA Potential}
+					\includegraphics[width=\linewidth]{./figures/sarsa_potential/figures/value_heatmap.png}
+				\end{minipage}
+
+			\end{block}
+
+			% ---------------------------------------------------------
+
+			\begin{block}{State Visitation (All Settings)}
+
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{Q Correct}
+					\includegraphics[width=\linewidth]{./figures/q_learning_correct/figures/state_visits.png}
+				\end{minipage}
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{Q Bad}
+					\includegraphics[width=\linewidth]{./figures/q_learning_proximity_bad/figures/state_visits.png}
+				\end{minipage}
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{Q Potential}
+					\includegraphics[width=\linewidth]{./figures/q_learning_potential/figures/state_visits.png}
+				\end{minipage}
+
+				\medskip
+
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{SARSA Correct}
+					\includegraphics[width=\linewidth]{./figures/sarsa_correct/figures/state_visits.png}
+				\end{minipage}
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{SARSA Bad}
+					\includegraphics[width=\linewidth]{./figures/sarsa_proximity_bad/figures/state_visits.png}
+				\end{minipage}
+				\begin{minipage}{0.32\textwidth}
+					\centering
+					\textbf{SARSA Potential}
+					\includegraphics[width=\linewidth]{./figures/sarsa_potential/figures/state_visits.png}
+				\end{minipage}
+
+				\medskip
+
+				\begin{itemize}
+					\item Bad reward → concentrated visits in misleading regions
+					\item Potential → smooth gradient + efficient exploration
+					\item Correct → slower propagation of values
+				\end{itemize}
+
 			\end{block}
 		\end{column}
 
-		% -------- Column 2 --------
+		% =========================================================
+		% COLUMN 3 — POLICIES + INSIGHT
+		% =========================================================
 		\begin{column}{0.32\textwidth}
-			\begin{block}{Results}
 
-				Your results
+			\begin{block}{Policies (All Settings)}
+
+				% Header row
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Q-learning}
+				\end{minipage}
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{SARSA}
+				\end{minipage}
+
+				\medskip
+
+				% -------- Correct --------
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Correct}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/q_learning_correct/figures/policy.png}
+				\end{minipage}
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Correct}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/sarsa_correct/figures/policy.png}
+				\end{minipage}
+
+				\medskip
+
+				% -------- Bad --------
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Misspecified}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/q_learning_proximity_bad/figures/policy.png}
+				\end{minipage}
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Misspecified}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/sarsa_proximity_bad/figures/policy.png}
+				\end{minipage}
+
+				\medskip
+
+				% -------- Potential --------
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Potential}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/q_learning_potential/figures/policy.png}
+				\end{minipage}
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Potential}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/sarsa_potential/figures/policy.png}
+				\end{minipage}
+
+				\medskip
+
+				\begin{itemize}
+					\item Misspecified reward $\rightarrow$ exploitation / loops
+					\item Correct $\rightarrow$ safe but longer paths
+					\item Potential $\rightarrow$ optimal and direct behavior
+				\end{itemize}
+
 			\end{block}
-			\begin{alertblock}{Important Result}
-				This stands out visually.
+			% ---------------------------------------------------------
+
+
+			\begin{block}{Greedy Trajectories (All Settings)}
+
+				% Header row
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Q-learning}
+				\end{minipage}
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{SARSA}
+				\end{minipage}
+
+				\medskip
+
+				% -------- Correct --------
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Correct}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/q_learning_correct/figures/greedy_trajectory.png}
+				\end{minipage}
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Correct}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/sarsa_correct/figures/greedy_trajectory.png}
+				\end{minipage}
+
+				\medskip
+
+				% -------- Bad --------
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Misspecified}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/q_learning_proximity_bad/figures/greedy_trajectory.png}
+				\end{minipage}
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Misspecified}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/sarsa_proximity_bad/figures/greedy_trajectory.png}
+				\end{minipage}
+
+				\medskip
+
+				% -------- Potential --------
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Potential}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/q_learning_potential/figures/greedy_trajectory.png}
+				\end{minipage}
+				\begin{minipage}{0.48\textwidth}
+					\centering
+					\textbf{Potential}
+					\vspace{2mm}
+
+					\includegraphics[width=\linewidth]{./figures/sarsa_potential/figures/greedy_trajectory.png}
+				\end{minipage}
+
+				\medskip
+
+				\begin{itemize}
+					\item Misspecified reward $\rightarrow$ loops / local exploitation
+					\item Correct $\rightarrow$ cautious but suboptimal paths
+					\item Potential $\rightarrow$ efficient shortest paths
+				\end{itemize}
+
+			\end{block}
+			% ---------------------------------------------------------
+
+			\begin{alertblock}{Main Insight}
+
+				\begin{center}
+					\Large
+					Reward design dominates learning behavior \\
+					\medskip
+					High return $\neq$ task success
+				\end{center}
+
 			\end{alertblock}
-		\end{column}
 
-		% -------- Column 3 --------
-		\begin{column}{0.32\textwidth}
+			% ---------------------------------------------------------
+
 			\begin{block}{Conclusion}
-				Your conclusion
+
+				\begin{itemize}
+
+					\item \textbf{Reward design strongly impacts learning}: agents optimize the signal they receive, not the intended objective.
+
+					\item \textbf{Misspecified rewards lead to reward hacking}, producing high returns but incorrect behaviors.
+
+					\item With stochastic transitions:
+
+					      \medskip
+
+					      \begin{itemize}
+						      \item \textbf{Q-learning} learns faster but is less robust
+
+						            \medskip
+
+						      \item \textbf{SARSA} is more stable but slower
+					      \end{itemize}
+
+					\item \textbf{Potential-based shaping} improves learning speed while preserving the optimal policy.
+
+				\end{itemize}
+
+				\medskip
+
+				\begin{center}
+					\textbf{Designing the reward is as important as choosing the algorithm.}
+				\end{center}
+
 			\end{block}
 		\end{column}
 
